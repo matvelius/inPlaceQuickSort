@@ -1,10 +1,12 @@
-// ID успешной посылки: 51681300
+// ID успешной посылки: 51717105
 
 // ПРИНЦИП РАБОТЫ
 
-// Как и в обычной быстрой сортировке, здесь важен шаг выбора опорного элемента (я 
-// использовал метод Ломуто) и последующее разделение массива на две части: элементы 
-// равные или меньше опорного слева, а те что больше - справа. 
+// Как и в обычной быстрой сортировке, здесь важен шаг выбора опорного элемента 
+// и последующее разделение массива на две части: элементы равные или меньше опорного 
+// слева, а те что больше - справа. Мой алгоритм выбирает случайный опорный элемент и
+// перед началом сортировки переставляет его в конец массива, для последующего разбиения
+// Ломуто.
 
 // Чтобы избежать создания нового массива и не использовать лишнюю память, используется
 // функция swapValuesAtIndices, которая просто меняет местами элементы по двум индексам.
@@ -35,8 +37,9 @@
 
 // Все данные программы хранятся в одном и том же массиве размера n, который создается
 // при считывании входящих данных. Таким образом, пространственная сложность моего 
-// алгоритма - O(n).
+// алгоритма - O(1), учитывая что дана ссылка на уже существующий массив.
 
+const { get } = require('https');
 let readline = require('readline');
 let rl = readline.createInterface({
   input: process.stdin,
@@ -63,7 +66,7 @@ function addParticipant(participant) {
 }
 
 function printSortedNames() {
-  var outputText = ""
+  let outputText = ""
   for (let i = 0; i < array.length; i++) {
     outputText += array[i].name + "\n"
   }
@@ -79,11 +82,21 @@ function inPlaceQuickSort(array, left, right) {
     return
   }
 
-  let p = partition(array, left, right) // p is the index of the pivot
+  let p = generateRandomPivot(array, left, right) // p is the index of the pivot
 
   inPlaceQuickSort(array, left, p)
   inPlaceQuickSort(array, p + 1, right)
+}
 
+// choose random pivot, make it the right-most element, call partition
+function generateRandomPivot(array, left, right) {
+  const randomPivotIndex = getRandomInt(left, right - 1)
+  swapValuesAtIndices(randomPivotIndex, right - 1)
+  return partition(array, left, right)
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function partition(array, left, right) {
@@ -93,7 +106,7 @@ function partition(array, left, right) {
 
   var l = left
   var r = right - 1
-  let pivotObject = array[r]
+  const pivotObject = array[r]
 
   while (r > l) {
     if (!isABiggerThanB(array[r - 1], pivotObject)) {
